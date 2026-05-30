@@ -18811,7 +18811,7 @@ const GA = () => {
     info: (...e) => {}
 }
   , gj = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "src", "sck", "fbclid", "gclid", "ttclid", "ref", "xcod"]
-  , YA = /^[a-zA-Z0-9_\-\.]+$/
+  , YA = /^[^<>]*$/
   , QA = 100
   , xj = e => {
     if (!e || typeof e != "string")
@@ -18826,28 +18826,35 @@ const GA = () => {
   , yj = () => {
     const e = new URLSearchParams(window.location.search)
       , t = {};
-    gj.forEach(r => {
-        const n = e.get(r);
+    e.forEach((n, r) => {
         if (n) {
             const s = xj(n);
             s && (sessionStorage.setItem(r, s),
             t[r] = s)
         }
-    }
-    ),
+    }),
     Object.keys(t).length > 0 && sessionStorage.setItem("utm_params", JSON.stringify(t))
 }
   , vj = () => {
     const e = {};
-    return gj.forEach(t => {
+    try {
+        const t = sessionStorage.getItem("utm_params");
+        if (t) {
+            const r = JSON.parse(t);
+            Object.entries(r).forEach( ([n, s]) => {
+                const i = xj(s);
+                i && (e[n] = i)
+            })
+        }
+    } catch {}
+    gj.forEach(t => {
         const r = sessionStorage.getItem(t);
         if (r) {
             const n = xj(r);
             n && (e[t] = n)
         }
-    }
-    ),
-    e
+    });
+    return e
 }
   , JA = e => {
     const t = vj();
@@ -40886,7 +40893,7 @@ const A$ = () => {
 }
   , Wd = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "src", "sck", "fbclid", "gclid", "ttclid", "ref", "xcod"]
   , q0 = "utm_params"
-  , H$ = /^[a-zA-Z0-9_\-\.]+$/
+  , H$ = /^[^<>]*$/
   , q$ = 100
   , K$ = ["/sucesso-final", "/emprestimo-aprovado", "/confirmacao-transferencia", "/sucesso", "/"]
   , Rl = e => {
@@ -40900,14 +40907,12 @@ const A$ = () => {
     v.useEffect( () => {
         const s = new URLSearchParams(e.search)
           , i = {};
-        Wd.forEach(o => {
-            const l = s.get(o);
+        s.forEach((l, o) => {
             if (l) {
                 const c = Rl(l);
                 c && (i[o] = c)
             }
-        }
-        ),
+        }),
         Object.keys(i).length > 0 && sessionStorage.setItem(q0, JSON.stringify(i))
     }
     , [e.search]);
@@ -40937,8 +40942,7 @@ const A$ = () => {
                 const l = Rl(o);
                 l && (s[i] = l)
             }
-        }
-        ),
+        }),
         s
     }
     , [])
@@ -40969,15 +40973,13 @@ const A$ = () => {
       , n = v.useCallback( () => {
         const s = new URLSearchParams(e.search)
           , i = {};
-        return Wd.forEach(o => {
-            const l = s.get(o);
+        s.forEach((l, o) => {
             if (l) {
                 const c = Rl(l);
                 c && (i[o] = c)
             }
-        }
-        ),
-        Object.keys(i).length > 0 ? i : t()
+        });
+        return Object.keys(i).length > 0 ? i : t()
     }
     , [e.search, t]);
     return {
